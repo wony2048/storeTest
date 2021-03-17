@@ -16,6 +16,12 @@ public class GooglePlayManager : MonoBehaviour
     public Button btnLogin;
     public Button btnLogout;
     public IAPManager iap;
+    public Transform helper;
+    public Transform orignal;
+    public Transform dest;
+    public Transform observer;
+    public Vector3 pos;
+    public Vector3 rot;
 
     private void Awake()
     {
@@ -30,16 +36,21 @@ public class GooglePlayManager : MonoBehaviour
 
         btnLogin.onClick.AddListener(OnLogin);
         btnLogout.onClick.AddListener(OnLogOut);
+        pos = (helper.position - orignal.position);
+        dest.position = (pos + orignal.position) + orignal.position;
     }
 
     // Start is called before the first frame update
     void Start()
     {
         // 자동 로그인
-        OnLogin();
+        //OnLogin();
 
         btnGold.onClick.AddListener(() =>
         {
+            pos = (helper.position - observer.position);
+            observer.position = (pos + observer.position) + observer.position;
+            return;
             iap.BuyConsumable();
         });
     }
@@ -52,6 +63,8 @@ public class GooglePlayManager : MonoBehaviour
     // 자동 로그인
     private void OnLogin()
     {
+        observer.position = dest.position - pos;
+        return;
         SetLog("...");
         if (isWaitingForAuth) return;
 
@@ -85,6 +98,8 @@ public class GooglePlayManager : MonoBehaviour
 
     private void OnLogOut()
     {
+        dest.position = pos + orignal.position;
+        return;
         PlayGamesPlatform.Activate().SignOut();
         SetLog("LogOut...");
         myName.text = "";
